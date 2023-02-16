@@ -8,6 +8,7 @@ module.exports = {
   // function for our authenticated routes
   authMiddleware: function (req, res, next) {
     // allows token to be sent via  req.query or headers
+    // TODO? add req.body.token?
     let token = req.query.token || req.headers.authorization;
 
     // ["Bearer", "<tokenvalue>"]
@@ -29,6 +30,7 @@ module.exports = {
     }
 
     // send to next endpoint
+    // TODO? change to --> return req
     next();
   },
   signToken: function ({ username, email, _id }) {
