@@ -3,15 +3,19 @@ const { ApolloServer } = require('apollo-server-express');
 const path = require('path');
 const { authMiddleware } = require('./utils/auth');
 
-// ADD typeDefs, resolvers 
 
+const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 // DELETE LATER
 // const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-// Add apollo server
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: authMiddleware,
+})
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -30,6 +34,13 @@ app.get('/', (req, res) => {
 })
 
 // Write start apollo server function and call it
-db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
-});
+const startApolloServer = async (typeDefs, resolvers) => {
+  await server.start();
+  server.applyMiddleware({ app });
+
+  db.once('open', () => {
+    app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
+  });
+}
+
+startApolloServer(typeDefs, resolvers);
