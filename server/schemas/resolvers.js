@@ -19,7 +19,7 @@ const resolvers = {
         }
     },
 
-    Mutatiion: {
+    Mutation: {
 
         // add a user and assign token
         addUser: async (parent, { username, email, password }) => {
