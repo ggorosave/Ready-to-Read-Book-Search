@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
+
+// queries?
+// import { useQuery } from '@apollo/client';
+// import { QUERY_ME } from '../utils/queries'; 
+
+// mutations
 import { useMutation } from '@apollo/client';
-import {}
+import { SAVE_BOOK } from '../utils/mutations';
 
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
@@ -12,10 +18,11 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
+  const [saveBook, { error, data }] = useMutation(SAVE_BOOK);
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
-
+ 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
@@ -66,14 +73,24 @@ const SearchBooks = () => {
       return false;
     }
 
+    const userId = Auth.loggedIn() ? Auth.getProfile.data._id : null;
+
     try {
-      const response = await saveBook(bookToSave, token);
+      // -----DELETE?-----
+      // const response = await saveBook(bookToSave, token);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
 
-      // if book successfully saves to user's account, save book id to state
+      // // if book successfully saves to user's account, save book id to state
+      // setSavedBookIds([...savedBookIds, bookToSave.bookId]);
+      // --------------
+
+      const { data } = await saveBook({
+        variables: { userId, bookToSave },
+      })
+
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);
