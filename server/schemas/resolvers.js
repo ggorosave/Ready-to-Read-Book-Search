@@ -30,8 +30,8 @@ const resolvers = {
         },
 
         // finds user and assigns a token
-        login: async (parent, { username, email, password }) => {
-            const user = await User.findOne({ $or: [{ username }, { email }] });
+        login: async (parent, { email, password }) => {
+            const user = await User.findOne({ email: email });
 
             if (!user) {
                 throw new AuthenticationError('No user with this username or email found!');
@@ -44,13 +44,13 @@ const resolvers = {
             }
 
             const token = signToken(user);
-            return { token, profile }
+            return { token, user}
         },
 
-        saveBook: async (parent, { userId, bookId, authors, title, description, image }, context) => {
+        saveBook: async (parent, { bookId, authors, title, description, image }, context) => {
             if (context.user) {
                 return User.findOneAndUpdate(
-                    { _id: userId },
+                    { _id: context.user._id },
                     {
                         $addToSet: { savedBooks: {
                             bookId: bookId,
