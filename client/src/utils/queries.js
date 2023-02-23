@@ -7,11 +7,11 @@ export const QUERY_USER = gql`
             username
             email
             savedBooks {
+                bookId
                 title
                 authors
                 description
                 image
-                link
             }
         }
     }
@@ -29,7 +29,6 @@ export const QUERY_ME = gql`
                 title
                 description
                 image
-                link
             }
         }
     }
