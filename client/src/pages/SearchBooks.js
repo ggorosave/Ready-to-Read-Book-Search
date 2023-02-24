@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
-// queries?
+// refactor and pull in from parent?
 import { useQuery } from '@apollo/client';
 import { QUERY_ME } from '../utils/queries'; 
 
@@ -69,32 +69,10 @@ const SearchBooks = () => {
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
-    // get token
-    // const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-    // if (!token) {
-    //   return false;
-    // }
-
-    // const userId = Auth.loggedIn() ? Auth.getProfile.data._id : null;
-    // console.log('_______')
-    // console.log(user)
-    // console.log(bookToSave)
-    console.log('_______')
+    
     const userId = user._id;
-    // console.log('user id: ' + userId)
 
     try {
-      // -----DELETE?-----
-      // const response = await saveBook(bookToSave, token);
-
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
-
-      // // if book successfully saves to user's account, save book id to state
-      // setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-      // --------------
 
       const { data } = await saveBook({
         variables: { ...bookToSave, userId: userId },

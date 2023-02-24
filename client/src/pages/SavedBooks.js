@@ -1,22 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 
+// refactor and pull in from parent?
 import { useQuery } from '@apollo/client';
 import { QUERY_ME } from '../utils/queries';
 
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
 
-// START HERE --> Use Query Above?
-// import { getMe, deleteBook } from '../utils/API';
+
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
   
-  const { data } = useQuery(QUERY_ME);
-  const user = data?.me || {};
+  const { data } = useQuery(QUERY_ME, {
+    update(cache, { data: { removeBook } }) {
+      try {
+        cache.writeQuery({
+          query: QUERY_ME,
+          data: { me: removeBook },
+        })
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  });
+  // const user = data?.me || {};
+  const user = useMemo(() => data?.me || {}, [data?.me]);
   
   const [ removeBook, { error } ] = useMutation(REMOVE_BOOK);
 
@@ -32,20 +44,10 @@ const SavedBooks = () => {
           return false;
         }
 
-        // const response = await getMe(token);
-        // const user = await data?.me || {};
-        console.log('data: ');
-        console.log(user)
-
-        // if (!response.ok) {
-        //   throw new Error('something went wrong!');
-        // }
-
         if (!user) {
           throw new Error('something went wrong!');
         }
 
-        // const user = await response.json();
         setUserData(user);
       } catch (err) {
         console.error(err);
@@ -54,7 +56,7 @@ const SavedBooks = () => {
 
     getUserData();
     
-  }, [userDataLength, data]); //  deleted from prameters --> , [userDataLength]
+  }, [user]); //  deleted from parameters --> , [userDataLength]
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
