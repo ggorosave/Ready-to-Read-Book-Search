@@ -1,5 +1,5 @@
-# Ready-to-Read-Book-Search
-![License](https://img.shields.io/badge/License-MIT-blue) ![HTML](https://img.shields.io/badge/HTML-51.7%25-blue) ![JavaScript](https://img.shields.io/badge/JavaScript-30.8%25-blue) ![Handlebars](https://img.shields.io/badge/Handlebars-13.7%25-blue) ![CSS](https://img.shields.io/badge/CSS-3.8%25-blue)
+# Ready to Read Book Search
+![License](https://img.shields.io/badge/License-MIT-blue) ![HTML](https://img.shields.io/badge/HTML-5.1%25-red) ![JavaScript](https://img.shields.io/badge/JavaScript-94.4%25-green) ![CSS](https://img.shields.io/badge/CSS-0.5%25-blueviolet)
 
 ## Description
 Personalizing our data has become an essential feature of almost any web application. Ready to Read allows the user to search for books (using the [Google Books API](https://developers.google.com/books) to fetch book data), and save searched books so they can build a reading list or just for future reference.  This is a full stack MERN application that utilizes a query based server, [Apollo Server](https://www.apollographql.com/docs/apollo-server/).
