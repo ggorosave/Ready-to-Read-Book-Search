@@ -30,8 +30,8 @@ const resolvers = {
         },
 
         // finds user and assigns a token
-        login: async (parent, { username, email, password }) => {
-            const user = await User.findOne({ $or: [{ username }, { email }] });
+        login: async (parent, { email, password }) => {
+            const user = await User.findOne({ email: email });
 
             if (!user) {
                 throw new AuthenticationError('No user with this username or email found!');
@@ -44,15 +44,22 @@ const resolvers = {
             }
 
             const token = signToken(user);
-            return { token, profile }
+            return { token, user}
         },
 
-        addSavedBook: async (parent, { userId, savedBook }, context) => {
+        // saves a searched book
+        saveBook: async (parent, { userId, bookId, authors, title, description, image }, context) => {
             if (context.user) {
                 return User.findOneAndUpdate(
                     { _id: userId },
                     {
-                        $addToSet: { savedBooks: savedBook }
+                        $addToSet: { savedBooks: {
+                            bookId: bookId,
+                            authors: authors,
+                            title: title,
+                            description: description,
+                            image: image
+                        } }
                     },
                     { new: true }
                 )
@@ -60,12 +67,15 @@ const resolvers = {
 
             throw new AuthenticationError('You need to be logged in!');
         },
-
-        removeSavedBook: async (parent, { savedBook }, context) => {
+        
+        // removes a saved book
+        removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 return User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $pull: { savedBooks: savedBook } },
+                    { $pull: { savedBooks: {
+                        bookId: bookId
+                    } } },
                     { new: true }
                 );
             }
