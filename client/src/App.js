@@ -1,4 +1,5 @@
 import React from 'react';
+// import methods from apollo client
 import {
   ApolloClient,
   InMemoryCache,
@@ -11,12 +12,13 @@ import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
 
-// added
+
+// connects to apollo client
 const httpLink = createHttpLink({
   uri: '/graphql',
 })
 
-// added
+// utilizes json web tokens in local storage for authorization
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('id_token');
 
@@ -28,7 +30,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// added
+// instantiates apollo client and memory cache 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),

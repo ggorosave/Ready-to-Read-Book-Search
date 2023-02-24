@@ -6,8 +6,6 @@ const { authMiddleware } = require('./utils/auth');
 
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
-// DELETE LATER
-// const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,9 +22,6 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
 }
-
-// DELETE LATER
-// app.use(routes);
 
 // sends html file
 app.get('/', (req, res) => {

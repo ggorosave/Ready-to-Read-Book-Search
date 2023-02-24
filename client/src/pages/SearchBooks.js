@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
-// refactor and pull in from parent?
+// for queries
 import { useQuery } from '@apollo/client';
-import { QUERY_ME } from '../utils/queries'; 
+import { QUERY_ME } from '../utils/queries';
 
-// mutations
+// for mutations
 import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 
@@ -13,19 +13,22 @@ import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
-const SearchBooks = () => {
+const SearchBooks = ({ userId }) => {
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
 
+  // grab encrypted user data using the me query
   const { data } = useQuery(QUERY_ME);
+  // assign data to an easy to read variable
   const user = data?.me || {};
+  // sets up a mutation to save a book
   const [saveBook, { error }] = useMutation(SAVE_BOOK);
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
- 
+
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
@@ -69,11 +72,11 @@ const SearchBooks = () => {
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
-    
     const userId = user._id;
 
     try {
 
+      // uses save book mutation to save books to db
       const { data } = await saveBook({
         variables: { ...bookToSave, userId: userId },
       })
@@ -86,6 +89,9 @@ const SearchBooks = () => {
 
   return (
     <>
+      {error && (
+        <div className="my-3 p-3 bg-danger text-white">{error.message}</div>
+      )}
       <Jumbotron fluid className='text-light bg-dark'>
         <Container>
           <h1>Search for Books!</h1>

@@ -1,5 +1,4 @@
 const { gql } = require('apollo-server-express');
-// Add 'me' to queries?
 
 const typeDefs = gql`
     type User {

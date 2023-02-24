@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 
-// refactor and pull in from parent?
+// for queries
 import { useQuery } from '@apollo/client';
 import { QUERY_ME } from '../utils/queries';
 
+// for mutations
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
 
@@ -14,7 +15,8 @@ import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
-  
+
+  // grab encrypted user data using the me query
   const { data } = useQuery(QUERY_ME, {
     update(cache, { data: { removeBook } }) {
       try {
@@ -27,14 +29,16 @@ const SavedBooks = () => {
       }
     }
   });
-  // const user = data?.me || {};
+  // useMemo hook returns a memorized value, runs when only one of it's dependencies changes. (should use fewer resources if I understand correctly)
   const user = useMemo(() => data?.me || {}, [data?.me]);
-  
-  const [ removeBook, { error } ] = useMutation(REMOVE_BOOK);
+
+  // sets up the remove book mutation
+  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
 
+  // refreshes data if something changes in user data?
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -55,7 +59,7 @@ const SavedBooks = () => {
     };
 
     getUserData();
-    
+
   }, [user]); //  deleted from parameters --> , [userDataLength]
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
@@ -67,16 +71,8 @@ const SavedBooks = () => {
     }
 
     try {
-      // const response = await deleteBook(bookId, token);
 
-      // if (!response.ok) {
-      //   throw new Error('something went wrong!');
-      // }
-
-      // const updatedUser = await response.json();
-      // setUserData(updatedUser);
-
-      const { data } = await removeBook({ 
+      const { data } = await removeBook({
         variables: { bookId: bookId },
       });
 
@@ -94,6 +90,9 @@ const SavedBooks = () => {
 
   return (
     <>
+      {error && (
+        <div className="my-3 p-3 bg-danger text-white">{error.message}</div>
+      )}
       <Jumbotron fluid className='text-light bg-dark'>
         <Container>
           <h1>Viewing saved books!</h1>
